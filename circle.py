@@ -96,10 +96,10 @@ Slider(app, start=0, end=255, command=sliUpd)
 Text(app, text="Circle size:")
 size_input = TextBox(app, text="50")
 
-Text(app, text="Screen size (x):")
+Text(app, text="Canvas size (x):")
 x_input = TextBox(app, text="1092")
 
-Text(app, text="Screen size (y):")
+Text(app, text="Canvas size (y):")
 y_input = TextBox(app, text="749")
 
 Text(app, text="NOTE: After image generation, options to save file will be present\nSizes are in pixels", size=8, color="red")
