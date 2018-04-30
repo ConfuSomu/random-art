@@ -2,22 +2,22 @@ import pygame, random, sys
 from pygame.locals import *
 from guizero import App, PushButton, Text, TextBox, Combo, Slider, yesno, info
 
-def sliUpd(b):
+def brightUpdate(b): #update circle brightness
     global brightness
     brightness = int(b)
 
 def save_prompt():
-    app.destroy()
+    app.destroy() #close the main setup window
     
     if yesno("Save","Save generated drawing?"):
-        pygame.image.save(screen, fname + "." + ftype)
+        pygame.image.save(canvas, fname + "." + ftype)
         info("Saved", "Saved drawing (app will be closed)")
         sys.exit(0)
         
     info("Close", "Press OK to close app")
     sys.exit(0)
 
-def gen():
+def read(): #read input data
     button.disable()
     button.set_text("Generating...")
     app.set_title("Generating drawing...")
@@ -33,24 +33,25 @@ def gen():
     
     run(circles, brightness, size)
 
-def run(circles, brightness = 255, size = 50):
-    global screen
-    screen = pygame.display.set_mode([x_size, y_size])
+def run(circles, brightness = 255, size = 50): #generate
+    #create canvas
+    global canvas
+    canvas = pygame.display.set_mode([x_size, y_size])
     
     pygame.display.set_caption("Drawing")
-    screen.fill(white)
+    canvas.fill(white)
     
     
     def randCircle(surface):
         def randBright():
             c = ["r", "g", "b"]
             
-            prim = random.choice(c)#primary color (R, G or B)to set to 255
-            c.remove(prim) #remove it from the list to not change it by accident
+            prim = random.choice(c)#primary color (R, G or B)to set to the specified brightness. This is used to control the brightness
+            c.remove(prim) #remove it from the list to not change it again
             edit = random.choice(c) #choose the color to change to an random value (0-255)
             c.remove(edit) #only keep the remainting color
             
-            color = {prim: brightness, edit: random.randint(0, brightness), c[0]: 0} #brightness = 255 for bright colors
+            color = {prim: brightness, edit: random.randint(0, brightness), c[0]: 0} #the last color is at 0 brightness to have a secendary[?]/simple color. This should be changed to have more control over the colors.
             print(color) #debug
             print(color["r"], color["g"], color["b"]) #debug
             return [color["r"], color["g"], color["b"]]
@@ -59,15 +60,15 @@ def run(circles, brightness = 255, size = 50):
         y = random.randrange(0, y_size)#, 0.25)
         color = randBright()
         
-        pygame.draw.circle(screen, color, [x, y], size, 0)
+        pygame.draw.circle(canvas, color, [x, y], size, 0)
     
     
-    #pygame.draw.circle(screen, [111, 33, 33], [500, 500], 50, 0)
+    #draw the specified number of circles
     for i in range(0, circles):
-        randCircle(screen)
+        randCircle(canvas)
     
     #while True:
-    pygame.display.flip()
+    pygame.display.flip() #update the display
     
     save_prompt()
     
@@ -91,7 +92,7 @@ ftype_input = Combo(app, options=["png","jpeg","bmp","tga"])
 Text(app, text="Advanced", size=16)
 
 Text(app, text="Color brightness (255 is brightest):")
-Slider(app, start=0, end=255, command=sliUpd)
+Slider(app, start=0, end=255, command=brightUpdate)
 
 Text(app, text="Circle size:")
 size_input = TextBox(app, text="50")
@@ -104,5 +105,5 @@ y_input = TextBox(app, text="749")
 
 Text(app, text="NOTE: After image generation, options to save file will be present\nSizes are in pixels", size=8, color="red")
 
-button = PushButton(app, text="Generate!", command=gen)
+button = PushButton(app, text="Generate!", command=read)
 app.display()
